@@ -38,8 +38,15 @@ class RandomChar extends Component {
 		})
 	}
 
+	onCharLoading = () => {
+		this.setState({
+			loading: true
+		})
+	}
+
 	updateChar = () => {
 		const id = Math.floor(Math.random() * (1011400 - 1011000) + 1011000);
+		this.onCharLoading();
 		this.marvelService
 			.getCharacter(id)
 			.then(this.onCharLoaded)
@@ -91,7 +98,7 @@ const View = ({ char }) => {
 			<div className="randomchar__info">
 				<p className="randomchar__name">{name.length > 22 ? `${name.slice(0, 22)}...` : name}</p>
 				<p className="randomchar__descr">
-					{description ? description.slice(0, 150) + '...' : 'No have information'}
+					{description}
 				</p>
 				<div className="randomchar__btns">
 					<a href={homepage} className="button button__main">
