@@ -1,6 +1,7 @@
 import { Component } from 'react';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
+import PropTypes from 'prop-types';
 
 import MarvelService from '../../services/MarvelService';
 
@@ -13,7 +14,7 @@ class CharList extends Component {
 		error: false,
 		newItemLoaded: false,
 		offset: 210,
-		charEnded: false
+		charEnded: false,
 	}
 
 	marvelService = new MarvelService()
@@ -83,19 +84,49 @@ class CharList extends Component {
 		})
 	}
 
+	myRef = null;
+
+	createRef = elem => {
+		this.myRef = elem
+	}
+
+	onCharActive = (e, id) => {
+		if (this.myRef) {
+			this.myRef.classList.remove("char__item_selected")
+		}
+
+		const target = e.target.closest(".char__item")
+
+		this.createRef(target)
+
+		this.myRef.classList.add("char__item_selected")
+		this.myRef.focus()
+
+		this.props.onCharSelect(id)
+	}
+
+	onCharActveByPress = (e, id) => {
+		if (e.key === '' || e.key === 'Enter') {
+			e.preventDefault();
+			this.onCharActive(e, id)
+		}
+	}
+
 	renderChar = (arr) => {
-		const items = arr.map(item => {
+		const items = arr.map(({ id, name, thumbnail }) => {
 			let imgStyle = { 'objectFit': 'cover' }
-			if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
+			if (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
 				|| 'http://i.annihil.us/u/prod/marvel/i/mg/f/60/4c002e0305708.gif') {
 				imgStyle = { 'objectFit': 'unset' }
 			}
 			return (
 				<li className="char__item"
-					key={item.id}
-					onClick={() => this.props.onCharSelect(item.id)}>
-					<img src={item.thumbnail} alt="abyss" style={imgStyle} />
-					<div className="char__name">{item.name}</div>
+					key={id}
+					tabIndex={0}
+					onClick={(e) => this.onCharActive(e, id)}
+					onKeyDown={(e) => this.onCharActveByPress(e, id)}>
+					<img src={thumbnail} alt={name} style={imgStyle} />
+					<div className="char__name">{name}</div>
 				</li >
 			)
 		});
@@ -129,6 +160,10 @@ class CharList extends Component {
 			</div>
 		)
 	}
+}
+
+CharList.propTypes = {
+	onCharSelect: PropTypes.func.isRequired
 }
 
 export default CharList;
