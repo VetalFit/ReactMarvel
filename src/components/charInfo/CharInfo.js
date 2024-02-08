@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 
 import useMarvelService from '../../services/MarvelService';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -84,16 +85,18 @@ const View = ({ char }) => {
 			<div className="char__comics">Comics:</div>
 			<ul className="char__comics-list">
 				{comics.length > 0 ? null : 'There is no have comics'}
-				{
-					comics.map((item, i) => {
-						// eslint-disable-next-line array-callback-return
-						if (i > 9) return;
-						return (
-							<li key={i} className="char__comics-item">
-								{item.name}
-							</li>
-						)
-					})
+
+				{comics.slice(0, 10).map((item, i) => {
+					const comicId = item.resourceURI.substring(43);
+					return (
+						<Link
+							to={`/comics/${comicId}`}
+							key={i}
+							className="char__comics-item">
+							{item.name}
+						</Link>
+					)
+				})
 				}
 			</ul>
 		</>
