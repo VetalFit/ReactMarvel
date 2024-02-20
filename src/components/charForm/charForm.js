@@ -10,7 +10,8 @@ import { Link } from "react-router-dom";
 
 const CharForm = () => {
 	const [char, setChar] = useState(null);
-	const { loading, error, getCharacterByName, clearError } = useMarvelService();
+	const { getCharacterByName, clearError, process, setProcess } = useMarvelService();
+
 
 	const onCharLoaded = (char) => {
 		setChar(char);
@@ -20,10 +21,11 @@ const CharForm = () => {
 		clearError();
 
 		getCharacterByName(name)
-			.then(onCharLoaded);
+			.then(onCharLoaded)
+			.then(() => setProcess('succsess'))
 	}
 
-	const errorMessage = error ? <div className="char__critical-error"><ErrorMessage /></div> : null;
+	const errorMessage = process === 'error' ? <div className="char__critical-error"><ErrorMessage /></div> : null;
 	const results = !char ? null : char.length > 0 ?
 		<div className="char__wrapper">
 			<div className="char__success">There is! Visit {char[0].name} page?</div>
@@ -60,7 +62,7 @@ const CharForm = () => {
 						<button
 							type="submit"
 							className="button button__main"
-							disabled={loading}>
+							disabled={process === 'loading'}>
 							<div className="inner">find</div>
 							<FormikErrorMessage component="div" className="char__error" name="charName" />
 						</button>
